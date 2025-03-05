@@ -42,6 +42,3 @@ metro.config.js
 
 nativewind-env.d.ts
 	/// <reference types="nativewind/types" />
-
-npx expo lint
-npx expo install prettier eslint-config-prettier eslint-plugin-prettier "--" --save-dev
