@@ -51,7 +51,7 @@ const CustomButton = ({
 			{...props}
 		>
 			{IconLeft && <IconLeft />}
-			<Text className={`text-lg font-JakartaSemiBold mx-auto ${getTextVariantStyle(textVariant)}`}>{title}</Text>
+			<Text className={`text-lg font-JakartaSemiBold ${getTextVariantStyle(textVariant)}`}>{title}</Text>
 			{IconRight && <IconRight />}
 		</TouchableOpacity>
 	)
