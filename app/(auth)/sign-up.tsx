@@ -20,50 +20,39 @@ const SignUp = () => {
 		confirmPassword: ""
 	});
 
+	const [verification, setVerification] = useState({
+		state: "defualt",
+		error: "",
+		code: "",
+	})
 	const router = useRouter();
-	const [error, setError] = useState("");
-	const [isVerified, setIsVerified] = useState(false);
+	const { isLoaded, signUp, setActive } = useSignUp();
 	const [showPassword, setShowPassword] = useState(false);
 	const [showError, setShowError] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [pendingVerification, setPendingVerification] = useState(false);
-	const [code, setCode] = useState("");
-	const { isLoaded, signUp, setActive } = useSignUp();
 
 	const onSignUpPress = async () => {
 		if (!isLoaded) return;
-		const { name, email, password, confirmPassword } = form;
 
-		if (password !== confirmPassword) {
+		if (form.password !== form.confirmPassword) {
 			setShowError(true);
 			return;
 		}
 		try {
 			await signUp.create({
-				emailAddress: email,
-				password,
+				emailAddress: form.email,
+				password: form.password,
 			});
 
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
-			setPendingVerification(true);
+			setVerification({
+				...verification,
+				state: "pending"
+			});
 		} catch (err) {
-			// Ensure err is an object before accessing properties
-			if (typeof err === "object" && err !== null && "errors" in err) {
-				const errorObj = err as { errors: { code: string; message: string }[] };
-
-				if (errorObj.errors[0]?.code === "form_password_pwned") {
-					alert("This password has been found in a data breach. Please use a different password.");
-				} else {
-					alert("An error occurred: " + errorObj.errors[0]?.message);
-				}
-			} else {
-				console.error("Sign Up Error:", err);
-				alert("An unknown error occurred. Please try again.");
-			}
+			console.error(JSON.stringify(err, null, 2));
 		}
 	};
-
 
 	const onVerifyPress = async () => {
 		if (!isLoaded) return;
@@ -71,20 +60,32 @@ const SignUp = () => {
 		setIsLoading(true);
 		try {
 			const signUpAttempt = await signUp.attemptEmailAddressVerification({
-				code,
+				code: verification.code,
 			});
-			setIsLoading(false);
 
 			if (signUpAttempt.status === "complete") {
+				// to-do create user in database
 				await setActive({ session: signUpAttempt.createdSessionId });
-				setPendingVerification(false);
-				setCode("")
-				setIsVerified(true);
+				setVerification({
+					...verification,
+					state: "success",
+					code: "",
+				});
 			} else {
-				setError("Invalid verification code.");
+				setVerification({
+					...verification,
+					state: "failed",
+					error: "Invalid verification code."
+				});
 			}
-		} catch (err) {
-			setError("Something went wrong. Try again.");
+		} catch (err: any) {
+			setVerification({
+				...verification,
+				state: "failed",
+				error: err.errors[0].longMessage,
+			});
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -166,26 +167,33 @@ const SignUp = () => {
 					</View>
 				</View>
 			</View>
-			<Modal isVisible={pendingVerification} backdropOpacity={0.6} useNativeDriver>
+			<Modal isVisible={["pending", "failed"].includes(verification.state)} backdropOpacity={0.6} useNativeDriver>
 				<View className="absolute inset-0 flex items-center justify-center bg-transparent">
 					<View className="w-5/6 bg-white p-6 rounded-lg shadow-lg">
 						<Text className="text-xl font-semibold text-center mb-4">Verify Your Email</Text>
 						<Text className="text-gray-600 text-center mb-6">Check your mail for the verification code.</Text>
 						<TextInput
-							className={`w-full bg-gray-100 p-3 rounded-lg border ${error ? "border-red-500" : "border-gray-300"} mb-3 text-gray-700`}
-							value={code}
+							className={`w-full bg-gray-100 p-3 rounded-lg border ${verification.error ? "border-red-500" : "border-gray-300"} mb-3 text-gray-700`}
+							value={verification.code}
 							placeholder="Enter verification code"
 							onChangeText={(text) => {
-								setCode(text);
-								setError("");
+								setVerification({
+									...verification,
+									code: text,
+									error: ""
+								});
 							}}
 						/>
-						{error ? <Text className="text-red-500 text-center mb-2">{error}</Text> : null}
+						{verification.error && verification.state == "failed" ? <Text className="text-red-500 text-center mb-2">{verification.error}</Text> : null}
 						{/* Buttons */}
 						<View className="flex flex-row justify-between">
 							<TouchableOpacity
 								className="flex-1 bg-gray-300 p-3 rounded-lg mr-2"
-								onPress={() => { setPendingVerification(false); setCode("") }}
+								onPress={() => setVerification({
+									...verification,
+									code: "",
+									state: "default"
+								})}
 							>
 								<Text className="text-center text-gray-700 font-medium">Close</Text>
 							</TouchableOpacity>
@@ -206,10 +214,9 @@ const SignUp = () => {
 				</View>
 			</Modal>
 			<Modal
-				isVisible={isVerified}
+				isVisible={verification.state === "success"}
 				backdropOpacity={0.6}
 				useNativeDriver
-				statusBarTranslucent
 			>
 				<View className="absolute inset-0 flex items-center justify-center bg-transparent">
 					<View className="w-4/5 bg-white p-6 rounded-2xl shadow-lg items-center">
@@ -225,8 +232,11 @@ const SignUp = () => {
 						<TouchableOpacity
 							className="w-full bg-green-600 py-3 rounded-lg active:bg-green-700"
 							onPress={() => {
-								setIsVerified(false);
-								setPendingVerification(false);
+								setVerification({
+									state: "default",
+									code: "",
+									error: ""
+								})
 								setForm({
 									name: "",
 									email: "",
@@ -244,8 +254,8 @@ const SignUp = () => {
 			<Modal isVisible={showError} backdropOpacity={0.6} useNativeDriver>
 				<View className="bg-white p-6 rounded-lg shadow-lg items-center">
 					<View className="flex flex-row items-center gap-x-3">
-					<AntDesign name="warning" size={40} color="red" className="mb-3" />
-					<Text className="text-xl font-semibold text-center mb-4 text-red-600">Passwords Mismatch</Text>
+						<AntDesign name="warning" size={40} color="red" className="mb-3" />
+						<Text className="text-xl font-semibold text-center mb-4 text-red-600">Passwords Mismatch</Text>
 					</View>
 					<Text className="text-center mb-6 text-md">
 						Please check your password.

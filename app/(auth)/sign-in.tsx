@@ -24,18 +24,12 @@ const SignIn = () => {
 		setLoading(true);
 
 		const { emailAddress, password } = form;
-		console.log('====================================');
-		console.log(form);
-		console.log('====================================');
 		// Start the sign-in process using the email and password provided
 		try {
 			const signInAttempt = await signIn.create({
 				identifier: emailAddress,
 				password,
 			})
-			console.log('====================================');
-			console.log(signInAttempt);
-			console.log('====================================');
 			if (signInAttempt.status === 'complete') {
 				await setActive({ session: signInAttempt.createdSessionId });
 				router.replace('/(root)/(tabs)/home');
