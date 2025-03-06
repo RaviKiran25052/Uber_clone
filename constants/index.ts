@@ -31,8 +31,14 @@ import onboarding1 from "@/assets/images/onboarding1.png";
 import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
 import signUpCar from "@/assets/images/signup-car.png";
+import bike from "@/assets/images/bike.png";
+import auto from "@/assets/images/auto.png";
+import car from "@/assets/images/car.png";
+import van from "@/assets/images/van.png";
+import rydo from "@/assets/images/icon.png";
 
 export const images = {
+	rydo,
 	onboarding1,
 	onboarding2,
 	onboarding3,
@@ -41,6 +47,13 @@ export const images = {
 	check,
 	noResult,
 	message,
+};
+
+export const vehicleImages = {
+	bike,
+	auto,
+	car,
+	van,
 };
 
 export const icons = {

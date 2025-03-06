@@ -43,8 +43,8 @@ const SignUp = () => {
 			await signUp.create({
 				emailAddress: form.email,
 				password: form.password,
+            username: form.name,
 			});
-
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 			setVerification({
 				...verification,
@@ -76,12 +76,10 @@ const SignUp = () => {
 						clerkId: signUpAttempt.createdUserId,
 					}),
 				})
-				if (!response.ok) {
-					// If user creation in the database fails, delete the Clerk user
-					// await signUp.cancel();
-					throw new Error("Failed to create user in the database. User creation rolled back.");
-				}
-
+				// if (!response.ok) {
+				// 	// If user creation in the database fails, delete the Clerk user
+				// 	throw new Error("Failed to create user in the database. User creation rolled back.");
+				// }
 				await setActive({ session: signUpAttempt.createdSessionId });
 				setVerification({
 					...verification,

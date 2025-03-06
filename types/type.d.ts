@@ -6,7 +6,7 @@ declare interface Driver {
 	last_name: string;
 	profile_image_url: string;
 	car_image_url: string;
-	car_seats: number;
+	vehicle_seats: number;
 	rating: number;
 }
 
@@ -17,7 +17,7 @@ declare interface MarkerData {
 	title: string;
 	profile_image_url: string;
 	car_image_url: string;
-	car_seats: number;
+	vehicle_seats: number;
 	rating: number;
 	first_name: string;
 	last_name: string;
@@ -49,7 +49,7 @@ declare interface Ride {
 	driver: {
 		first_name: string;
 		last_name: string;
-		car_seats: number;
+		vehicle_seats: number;
 	};
 }
 
@@ -136,4 +136,8 @@ declare interface DriverCardProps {
 	item: MarkerData;
 	selected: number;
 	setSelected: () => void;
+}
+
+declare interface HeaderProps {
+	username?: string;
 }
