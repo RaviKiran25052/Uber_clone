@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { images } from "@/constants";
 import CustomButton from "@/components/CustomButton";
@@ -11,6 +11,7 @@ import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Modal from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
 	const [form, setForm] = useState({
@@ -49,7 +50,9 @@ const SignUp = () => {
 				...verification,
 				state: "pending"
 			});
-		} catch (err) {
+		} catch (err: any) {
+			const msg = err.errors[0].longMessage;
+			Alert.alert('Error', msg);
 			console.error(JSON.stringify(err, null, 2));
 		}
 	};
@@ -65,6 +68,20 @@ const SignUp = () => {
 
 			if (signUpAttempt.status === "complete") {
 				// to-do create user in database
+				const response = await fetchAPI("/(api)/user", {
+					method: "POST",
+					body: JSON.stringify({
+						name: form.name,
+						email: form.email,
+						clerkId: signUpAttempt.createdUserId,
+					}),
+				})
+				if (!response.ok) {
+					// If user creation in the database fails, delete the Clerk user
+					// await signUp.cancel();
+					throw new Error("Failed to create user in the database. User creation rolled back.");
+				}
+
 				await setActive({ session: signUpAttempt.createdSessionId });
 				setVerification({
 					...verification,
@@ -168,7 +185,7 @@ const SignUp = () => {
 				</View>
 			</View>
 			<Modal isVisible={["pending", "failed"].includes(verification.state)} backdropOpacity={0.6} useNativeDriver>
-				<View className="absolute inset-0 flex items-center justify-center bg-transparent">
+				<View className="absolute inset-0 flex items-center justify-center bg-transparent h-full">
 					<View className="w-5/6 bg-white p-6 rounded-lg shadow-lg">
 						<Text className="text-xl font-semibold text-center mb-4">Verify Your Email</Text>
 						<Text className="text-gray-600 text-center mb-6">Check your mail for the verification code.</Text>
@@ -255,7 +272,7 @@ const SignUp = () => {
 				<View className="bg-white p-6 rounded-lg shadow-lg items-center">
 					<View className="flex flex-row items-center gap-x-3">
 						<AntDesign name="warning" size={40} color="red" className="mb-3" />
-						<Text className="text-xl font-semibold text-center mb-4 text-red-600">Passwords Mismatch</Text>
+						<Text className="text-xl font-semibold text-center mb-4">Passwords Mismatch</Text>
 					</View>
 					<Text className="text-center mb-6 text-md">
 						Please check your password.
@@ -270,6 +287,7 @@ const SignUp = () => {
 					</TouchableOpacity>
 				</View>
 			</Modal>
+
 		</ScrollView>
 	);
 };
