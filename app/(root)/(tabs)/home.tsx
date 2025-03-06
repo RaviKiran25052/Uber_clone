@@ -6,9 +6,11 @@ import Ride from "@/components/RideCard";
 import Header from "@/components/Header";
 import EmptyRides from "@/components/EmptyRides";
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import Map from "@/components/Map";
+import { useLocationStore } from "@/store";
+import * as Location from "expo-location";
 
 let recentRides = [
 	{
@@ -142,7 +144,37 @@ let recentRides = [
 const Home = () => {
 
 	const { user } = useUser();
+	const {setUserLocation, setDestinationLocation} = useLocationStore();
+	const [hasPermission, setHasPermission] = useState(false);
 	const [loading, setLoading] = useState(false);
+
+	useEffect(()=> {
+		const requestLocation = async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+
+			if (status != "granted") {
+				setHasPermission(true);
+				return;
+			}
+
+			let location = await Location.getCurrentPositionAsync();
+
+			const address = await Location.reverseGeocodeAsync({
+				latitude: location.coords?.latitude!,
+				longitude: location.coords?.longitude!,
+			});
+
+			setUserLocation({
+				latitude: location.coords.latitude,
+				longitude: location.coords.longitude,
+				address: `${address[0].name} ${address[0].region}`,
+			})
+			console.log(`${address[0].name} ${address[0].region}`);
+			
+		};
+
+		requestLocation();
+	},[]);
 
 	return (
 		<SafeAreaView className="bg-gray-50 flex-1">
