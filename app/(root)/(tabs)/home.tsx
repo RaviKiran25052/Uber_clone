@@ -180,7 +180,9 @@ const Home = () => {
 		<SafeAreaView className="bg-gray-50 flex-1">
 			<StatusBar hidden={true} />
 			<Header username={user?.username as string} />
-			<SearchBar />
+			<SearchBar handlePress={function ({ latitude, longitude, address, }: { latitude: number; longitude: number; address: string; }): void {
+				throw new Error("Function not implemented.");
+			} } />
 			<Map />
 			<FlatList
 				data={recentRides?.slice(0, 5)}

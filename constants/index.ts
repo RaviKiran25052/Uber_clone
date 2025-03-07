@@ -23,6 +23,14 @@ import selectedMarker from "@/assets/icons/selected-marker.png";
 import star from "@/assets/icons/star.png";
 import target from "@/assets/icons/target.png";
 import to from "@/assets/icons/to.png";
+import bikeIcon from "@/assets/icons/bike.png";
+import autoIcon from "@/assets/icons/auto.png";
+import carIcon from "@/assets/icons/car.png";
+import vanIcon from "@/assets/icons/van.png";
+import activeBikeIcon from "@/assets/icons/selected-bike.png";
+import activeAutoIcon from "@/assets/icons/selected-auto.png";
+import activeCarIcon from "@/assets/icons/selected-car.png";
+import activeVanIcon from "@/assets/icons/selected-van.png";
 import check from "@/assets/images/check.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
@@ -54,6 +62,17 @@ export const vehicleImages = {
 	auto,
 	car,
 	van,
+};
+
+export const vehicleIcons = {
+	bikeIcon,
+	autoIcon,
+	carIcon,
+	vanIcon,
+	activeBikeIcon,
+	activeAutoIcon,
+	activeCarIcon,
+	activeVanIcon
 };
 
 export const icons = {
