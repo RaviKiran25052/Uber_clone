@@ -1,8 +1,9 @@
 import React from "react";
-import { View, TextInput } from "react-native";
+import { View } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { GoogleInputProps } from "@/types/type";
+import 'react-native-get-random-values';
 
 const googleAPI = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
@@ -18,18 +19,13 @@ const SearchBar = ({ handlePress, initialLocation }: GoogleInputProps) => {
 					textInputContainer: {
 						alignItems: "center",
 						justifyContent: "center",
-						borderRadius: 20,
 						marginHorizontal: 20,
-						position: "relative",
-						shadowColor: "#d4d4d4"
 					},
 					textInput: {
 						backgroundColor: "white",
 						fontFamily: "Jakarta-SemiBold",
 						fontSize: 16,
-						marginTop: 5,
-						width: "100%",
-						borderRadius: 200,
+						marginTop: 5
 					},
 					listView: {
 						backgroundColor: "white",
@@ -46,7 +42,8 @@ const SearchBar = ({ handlePress, initialLocation }: GoogleInputProps) => {
 						latitude: details?.geometry.location.lat!,
 						longitude: details?.geometry.location.lng!,
 						address: data.description
-					})
+					});
+					console.log(data, details);					
 				}}
 				query={{
 					key: googleAPI,

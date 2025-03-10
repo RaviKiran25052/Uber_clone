@@ -169,7 +169,7 @@ const Home = () => {
 				longitude: location.coords.longitude,
 				address: `${address[0].name} ${address[0].region}`,
 			})
-			console.log(`${address[0].name} ${address[0].region}`);
+			console.log(`${address[0].name} ${address[0].region} ${address[0].district}`);
 			
 		};
 

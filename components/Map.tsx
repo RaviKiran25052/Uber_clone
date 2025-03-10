@@ -4,8 +4,7 @@ import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import { useDriverStore, useLocationStore } from '@/store';
 import { calculateRegion, generateMarkersFromData } from '@/lib/map';
 import { MarkerData } from '@/types/type';
-import { icons, vehicleIcons } from '@/constants';
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { vehicleIcons } from '@/constants';
 
 const drivers = [
 	{
